@@ -9,12 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initPortfolio() {
   const sections = document.querySelectorAll('.page-section');
   const pageBadge = document.getElementById('pageBadge');
-  const deckSlideCount = document.getElementById('deckSlideCount');
   const navLinks = document.querySelectorAll('.nav-link');
-  const modeToggleBtn = document.getElementById('modeToggleBtn');
-  const modeText = document.getElementById('modeText');
-  const deckPrevBtn = document.getElementById('deckPrevBtn');
-  const deckNextBtn = document.getElementById('deckNextBtn');
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const navLinksContainer = document.getElementById('navLinks');
 
@@ -32,10 +27,6 @@ function initPortfolio() {
   const toastBox = document.getElementById('toastBox');
   const toastMessage = document.getElementById('toastMessage');
   const downloadMediaKitBtn = document.getElementById('downloadMediaKitBtn');
-
-  let currentSlideIndex = 1;
-  const totalSlides = sections.length;
-  let isDeckMode = false;
 
   // ----------------------------------------------------
   // 1. Intersection Observer for Scroll Tracking
@@ -58,12 +49,10 @@ function initPortfolio() {
   sections.forEach(section => observer.observe(section));
 
   function updateActivePage(pageNum) {
-    currentSlideIndex = pageNum;
     const formattedPage = pageNum < 10 ? `0${pageNum}` : `${pageNum}`;
 
-    // Update Badge & Deck Counter
+    // Update Badge
     if (pageBadge) pageBadge.textContent = `PAGE ${formattedPage}`;
-    if (deckSlideCount) deckSlideCount.textContent = `${formattedPage} / ${totalSlides < 10 ? '0' + totalSlides : totalSlides}`;
 
     // Update Nav Link Active state
     navLinks.forEach(link => {
@@ -80,55 +69,12 @@ function initPortfolio() {
     });
   }
 
-  // ----------------------------------------------------
-  // 2. Deck Presentation Mode & Navigation
-  // ----------------------------------------------------
-  function goToSlide(index) {
-    if (index < 1) index = 1;
-    if (index > totalSlides) index = totalSlides;
-
-    const targetSection = document.getElementById(`page-${index < 10 ? '0' + index : index}`);
-    if (targetSection) {
-      targetSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  if (deckPrevBtn) {
-    deckPrevBtn.addEventListener('click', () => goToSlide(currentSlideIndex - 1));
-  }
-
-  if (deckNextBtn) {
-    deckNextBtn.addEventListener('click', () => goToSlide(currentSlideIndex + 1));
-  }
-
-  // Keyboard navigation for presentation
+  // Close modal on Escape key
   window.addEventListener('keydown', (e) => {
-    if (videoModal && videoModal.classList.contains('open')) {
-      if (e.key === 'Escape') closeModal();
-      return;
-    }
-
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
-      goToSlide(currentSlideIndex + 1);
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
-      goToSlide(currentSlideIndex - 1);
+    if (e.key === 'Escape' && videoModal && videoModal.classList.contains('open')) {
+      closeModal();
     }
   });
-
-  // Toggle Presentation / Deck Mode
-  if (modeToggleBtn) {
-    modeToggleBtn.addEventListener('click', () => {
-      isDeckMode = !isDeckMode;
-      document.body.classList.toggle('deck-mode-active', isDeckMode);
-      if (isDeckMode) {
-        modeText.textContent = 'Scroll Mode';
-        showToast('Presentation Deck Mode enabled! Use Left/Right Arrow keys.');
-      } else {
-        modeText.textContent = 'Deck Mode';
-        showToast('Continuous Scroll Mode restored.');
-      }
-    });
-  }
 
   // Mobile Menu Toggle
   if (mobileMenuBtn && navLinksContainer) {
