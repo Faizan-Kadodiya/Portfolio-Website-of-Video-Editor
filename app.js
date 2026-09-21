@@ -1,3 +1,97 @@
+// Add or remove gallery entries here. Video files are loaded only when a visitor opens a card.
+const galleryVideos = [
+  {
+    title: 'Product Showcase',
+    description: 'A high-converting product edit that puts texture, detail, and brand aesthetics in the spotlight.',
+    category: 'Product Film',
+    thumbnail: 'assests/thumbnails/productShowcase.png',
+    videoUrl: 'assests/videos/productShowCase.mp4',
+    duration: 'HD Reel'
+  },
+  {
+    title: 'UGC-Style Content',
+    description: 'Authentic, relatable short-form content edited to build trust and hold audience attention.',
+    category: 'UGC Content',
+    thumbnail: 'assests/thumbnails/UGCStyleContent.png',
+    videoUrl: 'assests/videos/UGCStyleContent.mp4',
+    duration: 'HD Reel'
+  },
+  {
+    title: 'Promotional Short',
+    description: 'A punchy commercial cut with energetic pacing, intentional sound design, and a strong hook.',
+    category: 'Promotion',
+    thumbnail: 'assests/thumbnails/promotionalShort.png',
+    videoUrl: 'assests/videos/promotionalShort.mp4',
+    duration: 'HD Reel'
+  },
+  {
+    title: 'Laziz Food Reel',
+    description: 'A vibrant food-focused reel with engaging visuals, smooth cuts, and dynamic pacing designed to showcase the dish in an appetizing way.',
+    category: 'Food',
+    thumbnail: 'assests/thumbnails/lazizFood.png',
+    videoUrl: 'assests/videos/lazizFood.mp4',
+    duration: 'Food Reel'
+  },
+  {
+    title: 'Pizza Promotional Reel',
+    description: 'A mouth-watering promotional reel showcasing the pizza with cinematic food shots, smooth transitions, and engaging visual pacing.',
+    category: 'Food',
+    thumbnail: 'assests/thumbnails/psPizza.png',
+    videoUrl: 'assests/videos/psPizza.mp4',
+    duration: 'Food Reel'
+  },
+  {
+    title: 'Wipe Camera Reel',
+    description: 'A short creative reel using visual transitions, text overlays, and satisfying camera movement to create an engaging social media edit.',
+    category: 'Social Media',
+    thumbnail: 'assests/thumbnails/wipeCamera.png',
+    videoUrl: 'assests/videos/wipeCamera.mp4',
+    duration: 'Short Reel'
+  },
+  {
+    title: 'Trend-Based Reel',
+    description: 'Fast-moving trend-led storytelling designed around sharp transitions and high retention.',
+    category: 'Social Reel',
+    thumbnail: 'assests/thumbnails/trendBasedShort.png',
+    videoUrl: 'assests/videos/trendBased.mp4',
+    duration: 'HD Reel'
+  }
+];
+
+// Add or remove Content Portfolio categories here. Each category controls its label and preview media.
+const contentPortfolioCategories = [
+  {
+    id: 'product',
+    label: 'Product showcase videos',
+    videoUrl: 'assests/videos/productShowCase.mp4',
+    thumbnail: 'assests/thumbnails/productShowcase.png'
+  },
+  {
+    id: 'ugc',
+    label: 'UGC-style content',
+    videoUrl: 'assests/videos/UGCStyleContent.mp4',
+    thumbnail: 'assests/thumbnails/UGCStyleContent.png'
+  },
+  {
+    id: 'promo',
+    label: 'Promotional short videos',
+    videoUrl: 'assests/videos/promotionalShort.mp4',
+    thumbnail: 'assests/thumbnails/promotionalShort.png'
+  },
+  {
+    id: 'food',
+    label: 'Food videos',
+    videoUrl: 'assests/videos/psPizza.mp4',
+    thumbnail: 'assests/thumbnails/psPizza.png'
+  },
+  {
+    id: 'trend',
+    label: 'Trend-based short videos',
+    videoUrl: 'assests/videos/trendBased.mp4',
+    thumbnail: 'assests/thumbnails/trendBasedShort.png'
+  }
+];
+
 // Initialize Lucide Icons
 document.addEventListener('DOMContentLoaded', () => {
   if (window.lucide) {
@@ -12,15 +106,55 @@ function initPortfolio() {
   const navLinks = document.querySelectorAll('.nav-link');
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const navLinksContainer = document.getElementById('navLinks');
+  const videoGalleryGrid = document.getElementById('videoGalleryGrid');
+
+  // Gallery UI is intentionally generated from galleryVideos, keeping content separate from markup.
+  if (videoGalleryGrid) {
+    videoGalleryGrid.innerHTML = galleryVideos.map((video, index) => `
+      <article class="gallery-video-card" data-gallery-index="${index}" tabindex="0" role="button" aria-label="Play ${video.title}">
+        <div class="gallery-video-preview">
+          <img src="${video.thumbnail}" alt="${video.title} video preview" loading="lazy" decoding="async">
+          <div class="gallery-preview-overlay"></div>
+          <span class="gallery-category">${video.category}</span>
+          <span class="gallery-duration">${video.duration}</span>
+          <span class="gallery-play-button" aria-hidden="true"><i data-lucide="play" style="width: 20px; height: 20px; fill: currentColor;"></i></span>
+        </div>
+        <div class="gallery-card-details">
+          <h3>${video.title}</h3>
+          <p>${video.description}</p>
+          <span class="gallery-watch-link">Watch edit <i data-lucide="arrow-up-right" style="width: 16px; height: 16px;"></i></span>
+        </div>
+      </article>
+    `).join('');
+
+    const openGalleryVideo = (index) => {
+      const video = galleryVideos[index];
+      if (video && window.openModal) {
+        window.openModal(video.title, video.description, video.videoUrl, video.thumbnail);
+      }
+    };
+
+    videoGalleryGrid.addEventListener('click', (event) => {
+      const card = event.target.closest('.gallery-video-card');
+      if (card) openGalleryVideo(Number(card.dataset.galleryIndex));
+    });
+    videoGalleryGrid.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        const card = event.target.closest('.gallery-video-card');
+        if (card) {
+          event.preventDefault();
+          openGalleryVideo(Number(card.dataset.galleryIndex));
+        }
+      }
+    });
+  }
 
   // Modal Elements
   const videoModal = document.getElementById('videoModal');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
   const modalVideoTitle = document.getElementById('modalVideoTitle');
   const modalVideoDesc = document.getElementById('modalVideoDesc');
-  const modalVideoPoster = document.getElementById('modalVideoPoster');
   const modalPlayBtn = document.getElementById('modalPlayBtn');
-  const openReelGalleryBtn = document.getElementById('openReelGalleryBtn');
 
   // Form and Toast Elements
   const contactForm = document.getElementById('contactForm');
@@ -60,7 +194,8 @@ function initPortfolio() {
       if (linkPage === pageNum ||
         (pageNum === 2 && linkPage === 1) ||
         (pageNum === 3 && linkPage === 3) ||
-        ((pageNum === 4 || pageNum === 5) && linkPage === 4) ||
+        (pageNum === 4 && linkPage === 4) ||
+        (pageNum === 5 && linkPage === 5) ||
         (pageNum >= 6 && linkPage === 6)) {
         link.classList.add('active');
       } else {
@@ -93,7 +228,6 @@ function initPortfolio() {
   // 3. Video Showcase Player & Lightbox System
   // ----------------------------------------------------
   const mainVideoPlayer = document.getElementById('mainVideoPlayer');
-  const videoSource = document.getElementById('videoSource');
   const vPlayPauseBtn = document.getElementById('vPlayPauseBtn');
   const vPlayIcon = document.getElementById('vPlayIcon');
   const centerPlayIcon = document.getElementById('centerPlayIcon');
@@ -102,6 +236,7 @@ function initPortfolio() {
   const vTimeDisplay = document.getElementById('vTimeDisplay');
   const vMuteBtn = document.getElementById('vMuteBtn');
   const vMuteIcon = document.getElementById('vMuteIcon');
+  const vVolumeSlider = document.getElementById('vVolumeSlider');
   const vFullscreenBtn = document.getElementById('vFullscreenBtn');
 
   function formatTime(seconds) {
@@ -242,6 +377,17 @@ function initPortfolio() {
     });
   }
 
+  if (vVolumeSlider && mainVideoPlayer) {
+    vVolumeSlider.addEventListener('input', () => {
+      mainVideoPlayer.volume = Number(vVolumeSlider.value);
+      mainVideoPlayer.muted = mainVideoPlayer.volume === 0;
+      if (vMuteIcon) {
+        vMuteIcon.setAttribute('data-lucide', mainVideoPlayer.muted ? 'volume-x' : 'volume-2');
+        if (window.lucide) window.lucide.createIcons();
+      }
+    });
+  }
+
   // Fullscreen
   if (vFullscreenBtn && mainVideoPlayer) {
     vFullscreenBtn.addEventListener('click', () => {
@@ -253,68 +399,32 @@ function initPortfolio() {
     });
   }
 
-  // Bind project card click handlers to load real videos
-  const projectCards = document.querySelectorAll('.project-card');
-  projectCards.forEach(card => {
-    card.addEventListener('click', (e) => {
-      e.preventDefault();
-      const title = card.getAttribute('data-video-title') || 'Featured Brand Video';
-      const desc = card.getAttribute('data-video-desc') || 'Cinematic video content designed for client branding.';
-      const videoSrc = card.getAttribute('data-video-src') || 'assests/videos/productShowCase.mp4';
-      const posterSrc = card.getAttribute('data-video-img') || card.querySelector('img').src;
-      openModal(title, desc, videoSrc, posterSrc);
-    });
-  });
-
-  // Featured Reel Button
-  if (openReelGalleryBtn) {
-    openReelGalleryBtn.addEventListener('click', () => {
-      openModal(
-        'Faizan Kadodiya - Video Director & Editor Showreel',
-        'A high-energy compilation of viral short-form commercials, UGC hooks, product cinematography, and lifestyle reels.',
-        'assests/videos/productShowCase.mp4',
-        'assests/thumbnails/productShowcase.png'
-      );
-    });
-  }
-
   // ----------------------------------------------------
   // 4. Content Portfolio Category Switches
   // ----------------------------------------------------
   const inlinePortfolioVideo = document.getElementById('inlinePortfolioVideo');
+  const contentPortfolioList = document.getElementById('contentPortfolioList');
+
+  if (contentPortfolioList) {
+    contentPortfolioList.innerHTML = contentPortfolioCategories.map(category => `
+      <li class="portfolio-check-item" data-category-id="${category.id}" tabindex="0" role="button" aria-label="Preview ${category.label}">
+        <span class="check-icon-circle"><i data-lucide="check" style="width: 18px; height: 18px;"></i></span>
+        <span>${category.label}</span>
+      </li>
+    `).join('');
+  }
+
+  if (window.lucide) window.lucide.createIcons();
   const portfolioItems = document.querySelectorAll('.portfolio-check-item');
 
-  const categoryVideos = {
-    'product': {
-      title: 'productShowCase',
-      src: 'assests/videos/productShowCase.mp4',
-      poster: 'assests/thumbnails/productShowcase.png'
-    },
-    'lifestyle': {
-      title: 'lifeStyle',
-      src: 'assests/videos/lifeStyle.mp4',
-      poster: 'assests/thumbnails/lifeStyle.png'
-    },
-    'ugc': {
-      title: 'UGC stytle content',
-      src: 'assests/videos/UGCStyleContent.mp4',
-      poster: 'assests/thumbnails/UGCStyleContent.png'
-    },
-    'promo': {
-      title: 'promotionalShort',
-      src: 'assests/videos/promotionalShort.mp4',
-      poster: 'assests/thumbnails/promotionalShort.png'
-    },
-    'trend': {
-      title: 'trendBasedShort',
-      src: 'assests/videos/trendBased.mp4',
-      poster: 'assests/thumbnails/trendBasedShort.png'
-    }
-  };
+  const categoryVideos = Object.fromEntries(contentPortfolioCategories.map(category => [
+    category.id,
+    { title: category.label, src: category.videoUrl, poster: category.thumbnail }
+  ]));
 
   portfolioItems.forEach(item => {
     item.addEventListener('click', () => {
-      const type = item.getAttribute('data-filter') || 'product';
+      const type = item.getAttribute('data-category-id') || contentPortfolioCategories[0]?.id;
       const config = categoryVideos[type];
 
       portfolioItems.forEach(i => i.style.opacity = '0.6');
@@ -329,6 +439,15 @@ function initPortfolio() {
       }
     });
   });
+
+  // Configure the initial preview from the first category without autoplaying it.
+  if (inlinePortfolioVideo && portfolioItems.length && contentPortfolioCategories.length) {
+    const initialCategory = contentPortfolioCategories[0];
+    inlinePortfolioVideo.src = initialCategory.videoUrl;
+    inlinePortfolioVideo.poster = initialCategory.thumbnail;
+    inlinePortfolioVideo.load();
+    portfolioItems[0].style.opacity = '1';
+  }
 
   // ----------------------------------------------------
   // 5. Direct Gmail Dispatch Toast Helper
